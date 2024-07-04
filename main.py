@@ -16,7 +16,7 @@ class TextToImage:
         self.face.set_char_size(char_size * 64)
         self.slot = self.face.glyph
 
-    def calculate_image_size(self, text: str) -> (int, int, int):
+    def calculate_image_size(self, text: str) -> tuple:
         """
         Calculate the dimensions of the image needed to render the text.
 
