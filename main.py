@@ -20,7 +20,12 @@ class TextRenderer:
     TEXT_COLOR_RGB = (255, 255, 255)
 
     def __init__(self, font_path: str, char_size: int):
-        # Initialize font face
+        """
+        Initialize the TextRenderer with the font path and character size.
+
+        :param font_path: Path to the TrueType font file.
+        :param char_size: Character size in points.
+        """
         self.face = Face(font_path)
         self.face.set_char_size(char_size * 64)
         self.slot = self.face.glyph
@@ -30,7 +35,7 @@ class TextRenderer:
         Calculate dimensions of the image needed to render the text.
 
         :param text: Text to render.
-        :return: (width, height, baseline) of the image.
+        :return: Tuple (width, height, baseline) of the image.
         """
         width, height, baseline = 0, 0, 0
         previous_char = 0
@@ -94,9 +99,9 @@ class TextRenderer:
         :return: Rendered 3D bitmap buffer.
         """
         bitmap_3d = np.zeros((*bitmap_2d.shape, 4), dtype=np.uint8)
-        bitmap_3d[:, :, self.RED_CHANNEL] = self.TEXT_COLOR[0]
-        bitmap_3d[:, :, self.GREEN_CHANNEL] = self.TEXT_COLOR[1]
-        bitmap_3d[:, :, self.BLUE_CHANNEL] = self.TEXT_COLOR[2]
+        bitmap_3d[:, :, self.RED_CHANNEL] = self.TEXT_COLOR_RGB[0]
+        bitmap_3d[:, :, self.GREEN_CHANNEL] = self.TEXT_COLOR_RGB[1]
+        bitmap_3d[:, :, self.BLUE_CHANNEL] = self.TEXT_COLOR_RGB[2]
         bitmap_3d[:, :, self.ALPHA_CHANNEL] = bitmap_2d
         return bitmap_3d
 
@@ -128,9 +133,8 @@ class TextRenderer:
             (np.uint8(blended_slice), img_slice[:, :, 3, np.newaxis]), axis=2
         )
 
-    def pixel_alpha_blending(
-        self, bg_pixel: np.ndarray, fg_pixel: np.ndarray
-    ) -> np.ndarray:
+    @staticmethod
+    def pixel_alpha_blending(bg_pixel: np.ndarray, fg_pixel: np.ndarray) -> np.ndarray:
         """
         Perform alpha blending operation on the background and foreground pixel.
 
@@ -138,7 +142,7 @@ class TextRenderer:
         :param fg_pixel: Pixel values of the foreground image.
         :return: Final pixel value after alpha blending.
         """
-        alpha = fg_pixel[self.ALPHA_CHANNEL] / 255.0
+        alpha = fg_pixel[TextRenderer.ALPHA_CHANNEL] / 255.0
         blended_pixel = (1 - alpha) * bg_pixel[:3] + alpha * fg_pixel[:3]
         return np.uint8(np.append(blended_pixel, 255))
 
@@ -169,15 +173,15 @@ def main():
     Main function to execute the text rendering and save the output image.
     """
     font_path = "font.ttf"
-    char_size = 400
-    text = "Sample"
+    char_size = 800
+    text = "NATURE"
     img_path = os.path.join(os.path.dirname(__file__), "example.jpg")
 
     renderer = TextRenderer(font_path, char_size)
-    renderer.TEXT_COLOR_RGB = (200, 0, 54)
+    renderer.TEXT_COLOR_RGB = (247, 231, 220)
     img = read_image(img_path)
     rendered_image = renderer.render_text(text, img)
-    write_image(rendered_image, "result.png")
+    write_image(rendered_image, "result.jpg")
 
 
 if __name__ == "__main__":
