@@ -12,10 +12,12 @@ class TextRenderer:
     :param char_size: Character size in points.
     """
 
-    RED_CHANNEL = 0
+    BLUE_CHANNEL = 0
     GREEN_CHANNEL = 1
-    BLUE_CHANNEL = 2
+    RED_CHANNEL = 2
     ALPHA_CHANNEL = 3
+
+    TEXT_COLOR = (255, 255, 255)
 
     def __init__(self, font_path: str, char_size: int):
         # Initialize font face
@@ -52,8 +54,13 @@ class TextRenderer:
         :param image: Background image to render the text on.
         :return: Numpy array representing the rendered image.
         """
-        width, height, baseline = self.calculate_text_size(text)
-        x_position = 0
+        text_width, text_height, baseline = self.calculate_text_size(text)
+        image_height, image_width, _ = image.shape
+
+        # Calculate starting positions to center the text
+        x_position = (image_width - text_width) // 2
+        y_position = (image_height + text_height) // 2 - baseline
+
         previous_char = 0
 
         for char in text:
@@ -61,7 +68,7 @@ class TextRenderer:
             bitmap = self.slot.bitmap
             top = self.slot.bitmap_top
             left = self.slot.bitmap_left
-            y_position = height - baseline - top
+            y_char_position = y_position - top
             kerning = self.face.get_kerning(previous_char, char)
             x_position += kerning.x >> 6
 
@@ -70,7 +77,9 @@ class TextRenderer:
             )
             bitmap_3d = self.get_bitmap_3d(bitmap_2d)
 
-            self.apply_bitmap_to_image(image, bitmap_3d, x_position + left, y_position)
+            self.apply_bitmap_to_image(
+                image, bitmap_3d, x_position + left, y_char_position
+            )
 
             x_position += self.slot.advance.x >> 6
             previous_char = char
@@ -85,9 +94,9 @@ class TextRenderer:
         :return: Rendered 3D bitmap buffer.
         """
         bitmap_3d = np.zeros((*bitmap_2d.shape, 4), dtype=np.uint8)
-        bitmap_3d[:, :, self.RED_CHANNEL] = 255
-        bitmap_3d[:, :, self.GREEN_CHANNEL] = 255
-        bitmap_3d[:, :, self.BLUE_CHANNEL] = 255
+        bitmap_3d[:, :, self.RED_CHANNEL] = self.TEXT_COLOR[0]
+        bitmap_3d[:, :, self.GREEN_CHANNEL] = self.TEXT_COLOR[1]
+        bitmap_3d[:, :, self.BLUE_CHANNEL] = self.TEXT_COLOR[2]
         bitmap_3d[:, :, self.ALPHA_CHANNEL] = bitmap_2d
         return bitmap_3d
 
@@ -160,14 +169,15 @@ def main():
     Main function to execute the text rendering and save the output image.
     """
     font_path = "font.ttf"
-    char_size = 180
-    text = "Sample text for rendering."
+    char_size = 400
+    text = "Sample"
     img_path = os.path.join(os.path.dirname(__file__), "example.jpg")
 
     renderer = TextRenderer(font_path, char_size)
+    renderer.TEXT_COLOR = (200, 0, 54)
     img = read_image(img_path)
     rendered_image = renderer.render_text(text, img)
-    write_image(rendered_image, "result.jpg")
+    write_image(rendered_image, "result.png")
 
 
 if __name__ == "__main__":
