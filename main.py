@@ -17,7 +17,7 @@ class TextRenderer:
     RED_CHANNEL = 2
     ALPHA_CHANNEL = 3
 
-    TEXT_COLOR = (255, 255, 255)
+    TEXT_COLOR_RGB = (255, 255, 255)
 
     def __init__(self, font_path: str, char_size: int):
         # Initialize font face
@@ -174,7 +174,7 @@ def main():
     img_path = os.path.join(os.path.dirname(__file__), "example.jpg")
 
     renderer = TextRenderer(font_path, char_size)
-    renderer.TEXT_COLOR = (200, 0, 54)
+    renderer.TEXT_COLOR_RGB = (200, 0, 54)
     img = read_image(img_path)
     rendered_image = renderer.render_text(text, img)
     write_image(rendered_image, "result.png")
