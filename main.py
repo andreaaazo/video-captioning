@@ -27,8 +27,8 @@ def main():
     renderer.TEXT_COLOR_RGB = (247, 231, 220)
 
     img = read_image(os.path.join(BASE_PATH, "example.jpg"))
-    for _ in range(0, 1000):
-        rendered_image = renderer.render_text(text, img)
+
+    rendered_image = renderer.render_text(text, img)
     write_image(rendered_image, os.path.join(BASE_PATH, "result.jpg"))
 
     end_time = time.time()  # Record the end time
