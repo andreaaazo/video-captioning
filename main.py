@@ -13,8 +13,8 @@ def main():
     start_time = time.time()  # Record the start time
 
     font_path = "font.ttf"
-    char_size = 400
-    text = "NATURE"
+    char_size = 800
+    text = "RENDER TEST"
 
     BASE_PATH = os.path.dirname(__file__)
 
