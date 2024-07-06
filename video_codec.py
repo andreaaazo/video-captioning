@@ -4,17 +4,22 @@ import ffmpeg
 
 class VideoCodec:
     """
-    VideoCodec handles the encoding and decoding of video files.
+    Handles the encoding and decoding of video files.
 
-    :param [str] video_path: Path to the input video file.
-    :param [str] output_folder: Directory to store decoded frames.
-    :param [str] frame_folder: Directory containing frames for encoding.
-    :param [int] threads: 1 min. Number of threads to use for encoding/decoding.
-    :param [int] quality_scale: 1-31 Quality scale for the output images.
+    :param video_path: Path to the input video file.
+    :param output_folder: Directory to store decoded frames.
+    :param frame_folder: Directory containing frames for encoding.
+    :param threads: Number of threads to use for encoding/decoding. Default is 8.
+    :param quality_scale: Quality scale for the output images (1-31). Default is 2.
     """
 
     def __init__(
-        self, video_path, output_folder, frame_folder, threads=8, quality_scale=2
+        self,
+        video_path: str,
+        output_folder: str,
+        frame_folder: str,
+        threads: int = 8,
+        quality_scale: int = 2,
     ):
         self.video_path = video_path
         self.output_folder = output_folder
@@ -22,9 +27,9 @@ class VideoCodec:
         self.threads = threads
         self.quality_scale = quality_scale
 
-    def decode_video(self):
+    def decode_video(self) -> None:
         """
-        decode_video extracts frames from a video file and stores them as images.
+        Extracts frames from a video file and stores them as images.
 
         :return: None
         """
@@ -36,9 +41,9 @@ class VideoCodec:
             .run()
         )
 
-    def encode_video(self):
+    def encode_video(self) -> None:
         """
-        encode_video compiles images back into a video file.
+        Compiles images back into a video file.
 
         :return: None
         """

@@ -26,7 +26,7 @@ class TextRenderer:
         self, font_path: str, char_size: int, cache: Optional[BitmapCache] = None
     ):
         self.face = Face(font_path)
-        self.char_size = char_size * 64
+        self.char_size = char_size * 64  # FreeType uses 1/64th points
         self.face.set_char_size(self.char_size)
         self.slot = self.face.glyph
         self.cache = cache
