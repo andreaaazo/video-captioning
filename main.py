@@ -7,6 +7,7 @@ from video_utilities import VideoUtilities
 import time
 from speech_to_text import SpeechToText, SpeechToTextModel
 from audio_file import AudioFile
+from temp_file_manager import TempFileManager
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -50,7 +51,9 @@ def main():
     font_path = "font.ttf"
     char_size = 100
     cache = BitmapCache()
-    video_utils = VideoUtilities("example.mp4")
+    temp_manager = TempFileManager()
+
+    video_utils = VideoUtilities("example.mp4", temp_manager)
     audio = video_utils.extract_audio()
     model = SpeechToTextModel()
     audio = AudioFile(audio)
@@ -60,7 +63,7 @@ def main():
     frames = video_utils.get_frame_count()
 
     renderer = TextRenderer(font_path, char_size)
-    video_codec = VideoCodec("example.mp4")
+    video_codec = VideoCodec("example.mp4", temp_manager)
     video_codec.decode_video()
 
     frame_path = video_codec.get_frame_folder()
@@ -84,6 +87,8 @@ def main():
             break
 
     video_codec.encode_video(framerate)
+
+    temp_manager.clean_up()
 
 
 if __name__ == "__main__":

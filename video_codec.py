@@ -1,5 +1,6 @@
 import os
 import ffmpeg
+from temp_file_manager import TempFileManager
 
 
 class VideoCodec:
@@ -11,7 +12,13 @@ class VideoCodec:
     :param quality_scale: [int] Quality scale for the output images (1-31). Default is 2.
     """
 
-    def __init__(self, video_path: str, threads: int = 8, quality_scale: int = 2):
+    def __init__(
+        self,
+        video_path: str,
+        temp_manager: TempFileManager,
+        threads: int = 8,
+        quality_scale: int = 2,
+    ):
         """
         Initializes the VideoCodec with specified video path, threads, and quality scale.
 
@@ -22,7 +29,8 @@ class VideoCodec:
         self.video_path = video_path
         self.threads = threads
         self.quality_scale = quality_scale
-        self.temp_folder = os.path.join(os.path.dirname(video_path), "temp")
+        self.temp_manager = temp_manager
+        self.temp_folder = self.temp_manager.create_temp_dir("video_temp_")
         self.frame_folder = os.path.join(self.temp_folder, "frames")
         self.audio_path = os.path.join(self.temp_folder, "audio.mp3")
 

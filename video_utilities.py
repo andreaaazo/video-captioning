@@ -1,6 +1,7 @@
 import os
 import ffmpeg
 from typing import Optional, Dict, Any
+from temp_file_manager import TempFileManager
 
 
 class VideoUtilities:
@@ -10,13 +11,14 @@ class VideoUtilities:
     :param video_path: [str] Path to the input video file.
     """
 
-    def __init__(self, video_path: str):
+    def __init__(self, video_path: str, temp_manager: TempFileManager):
         """
         Initializes the VideoUtilities with the specified video path.
 
         :param video_path: [str] Path to the input video file.
         """
         self.video_path = video_path
+        self.temp_manager = temp_manager
 
     def extract_audio(self) -> Optional[str]:
         """
@@ -82,8 +84,7 @@ class VideoUtilities:
 
         :return: [str] Path to the output audio file.
         """
-        temp_dir = os.path.join(os.path.dirname(self.video_path), "temp")
-        os.makedirs(temp_dir, exist_ok=True)
+        temp_dir = self.temp_manager.create_temp_dir("audio_temp_")
         return os.path.join(
             temp_dir, f"{os.path.splitext(os.path.basename(self.video_path))[0]}.mp3"
         )
