@@ -1,4 +1,4 @@
-from captioning_pipeline import CaptioningPipeline
+from src.captioning_pipeline import CaptioningPipeline
 
 
 def main():

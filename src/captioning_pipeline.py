@@ -1,14 +1,14 @@
 import os
 from typing import List, Tuple
 
-from bitmap_cache import BitmapCache
-from temp_file_manager import TempFileManager
-from video_utilities import VideoUtilities
-from speech_to_text import SpeechToText, SpeechToTextModel
-from text_renderer import TextRenderer
-from video_codec import VideoCodec
-from image_utils import ImageUtils
-from audio_file import AudioFile
+from src.cache.bitmap_cache import BitmapCache
+from src.utils.temp_file_manager import TempFileManager
+from src.video.video_utilities import VideoUtilities
+from src.audio.speech_to_text import SpeechToText, SpeechToTextModel
+from src.rendering.text_renderer import TextRenderer
+from src.video.video_codec import VideoCodec
+from src.rendering.image_utils import ImageUtils
+from src.audio.audio_file import AudioFile
 
 
 class CaptioningPipeline:

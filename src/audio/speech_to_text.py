@@ -1,6 +1,6 @@
 from typing import List, Tuple
-from audio_file import AudioFile
-from speech_to_text_model import SpeechToTextModel
+from src.audio.audio_file import AudioFile
+from src.audio.speech_to_text_model import SpeechToTextModel
 
 
 class SpeechToText:

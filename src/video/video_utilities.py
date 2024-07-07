@@ -1,7 +1,7 @@
 import os
 import ffmpeg
 from typing import Optional, Dict, Any
-from temp_file_manager import TempFileManager
+from src.utils.temp_file_manager import TempFileManager
 
 
 class VideoUtilities:

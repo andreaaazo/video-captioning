@@ -1,7 +1,7 @@
 import threading
 import numpy as np
 from freetype import Face
-from bitmap_cache import BitmapCache
+from src.cache.bitmap_cache import BitmapCache
 from typing import Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor
 

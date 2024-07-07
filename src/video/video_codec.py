@@ -1,6 +1,6 @@
 import os
 import ffmpeg
-from temp_file_manager import TempFileManager
+from src.utils.temp_file_manager import TempFileManager
 
 
 class VideoCodec:
