@@ -90,8 +90,21 @@ class TextRenderer:
         with ThreadPoolExecutor() as executor:
             for char in text:
                 cache_key = (char, self.char_size)
-                with self.lock:
-                    bitmap_3d, left, top = self.cache.cache[cache_key]
+                if self.cache and cache_key in self.cache.cache:
+                    with self.lock:
+                        bitmap_3d, left, top = self.cache.cache[cache_key]
+                else:
+                    self.face.load_char(char)
+                    bitmap = self.slot.bitmap
+                    top = self.slot.bitmap_top
+                    left = self.slot.bitmap_left
+                    bitmap_2d = np.array(bitmap.buffer, dtype=np.uint8).reshape(
+                        bitmap.rows, bitmap.width
+                    )
+                    bitmap_3d = self.get_bitmap_3d(bitmap_2d)
+                    if self.cache:
+                        with self.lock:
+                            self.cache.cache[cache_key] = (bitmap_3d, left, top)
 
                 y_char_position = y_position - top
                 kerning = self.get_kerning(previous_char, char)
