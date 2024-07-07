@@ -18,6 +18,8 @@ class VideoCodec:
         temp_manager: TempFileManager,
         threads: int = 8,
         quality_scale: int = 2,
+        video_codec: str = "libx264",
+        pixel_format: str = "yuv420p",
     ):
         """
         Initializes the VideoCodec with specified video path, threads, and quality scale.
@@ -30,6 +32,8 @@ class VideoCodec:
         self.threads = threads
         self.quality_scale = quality_scale
         self.temp_manager = temp_manager
+        self.video_codec = video_codec
+        self.pixel_format = pixel_format
         self.temp_folder = self.temp_manager.create_temp_dir("video_temp_")
         self.frame_folder = os.path.join(self.temp_folder, "frames")
         self.audio_path = os.path.join(self.temp_folder, "audio.mp3")
@@ -63,7 +67,7 @@ class VideoCodec:
             .run()
         )
 
-    def encode_video(self, framerate: int = 30) -> None:
+    def encode_video(self, framerate: int) -> None:
         """
         Compiles images back into a video file with the original audio.
 
@@ -78,8 +82,8 @@ class VideoCodec:
             ffmpeg.input(input_path, framerate=framerate)
             .output(
                 temp_video_path,
-                vcodec="libx264",
-                pix_fmt="yuv420p",
+                vcodec=self.video_codec,
+                pix_fmt=self.pixel_format,
             )
             .global_args("-threads", str(self.threads))
             .run()
@@ -93,7 +97,7 @@ class VideoCodec:
             ffmpeg.concat(video, audio, v=1, a=1)
             .output(
                 os.path.join(os.path.dirname(self.video_path), "final.mp4"),
-                vcodec="libx264",
+                vcodec=self.video_codec,
                 acodec="aac",
             )
             .global_args("-threads", str(self.threads))

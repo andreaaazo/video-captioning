@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from src.cache.bitmap_cache import BitmapCache
 from src.utils.temp_file_manager import TempFileManager
@@ -19,10 +19,24 @@ class CaptioningPipeline:
     :param font_path: Path to the font file used for rendering text.
     :param char_size: Size of the characters in the rendered text.
     :param word_count: Number of words to render per frame.
+    :param speech_to_text_model_name: Name of the speech-to-text model to use. [choices: "tiny", "base", "small", "medium", "large"]
+    :param codec_quality_scale: Quality scale for video codec. Lower values mean higher quality and larger file size, higher values mean lower quality and smaller file size. [min: 1, max: 51]
+    :param codec_threads: Number of threads to use for video codec. [min: 1, max: 16]
+    :param video_codec: Codec to use for video encoding. [choices: "libx264", "libx265", "mpeg4", "vp8", "vp9", "av1"]
+    :param codec_pixel_format: Pixel format for video encoding. [choices: "yuv420p", "yuv422p", "yuv444p", "rgb24", "gray"]
     """
 
     def __init__(
-        self, video_path: str, font_path: str, char_size: int, word_count: int = 1
+        self,
+        video_path: str,
+        font_path: str,
+        char_size: int,
+        word_count: Optional[int] = 1,
+        speech_to_text_model_name: Optional[str] = "medium",
+        codec_quality_scale: Optional[int] = 2,
+        codec_threads: Optional[int] = 8,
+        video_codec: Optional[str] = "libx264",
+        codec_pixel_format: Optional[str] = "yuv420p",
     ):
         self.video_path = video_path
         self.font_path = font_path
@@ -35,9 +49,16 @@ class CaptioningPipeline:
         self.cache = BitmapCache()
         self.temp_manager = TempFileManager()
         self.video_utils = VideoUtilities(video_path, self.temp_manager)
-        self.model = SpeechToTextModel()
+        self.model = SpeechToTextModel(model_name=speech_to_text_model_name)
         self.renderer = TextRenderer(font_path, char_size)
-        self.video_codec = VideoCodec(video_path, self.temp_manager)
+        self.video_codec = VideoCodec(
+            video_path,
+            self.temp_manager,
+            quality_scale=codec_quality_scale,
+            threads=codec_threads,
+            video_codec=video_codec,
+            pixel_format=codec_pixel_format,
+        )
 
     def _validate_file_paths(self):
         """

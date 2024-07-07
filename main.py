@@ -3,7 +3,12 @@ from src.captioning_pipeline import CaptioningPipeline
 
 def main():
     pipeline = CaptioningPipeline(
-        "data/example.mp4", "data/font.ttf", 100, word_count=2
+        "data/example.mp4",
+        "data/font.ttf",
+        100,
+        word_count=1,
+        speech_to_text_model_name="large",
+        codec_quality_scale=2,
     )
     pipeline.run()
 
