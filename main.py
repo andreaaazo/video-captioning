@@ -2,7 +2,9 @@ from src.captioning_pipeline import CaptioningPipeline
 
 
 def main():
-    pipeline = CaptioningPipeline("example.mp4", "font.ttf", 100)
+    pipeline = CaptioningPipeline(
+        "data/example.mp4", "data/font.ttf", 100, word_count=2
+    )
     pipeline.run()
 
 

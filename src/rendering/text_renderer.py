@@ -89,7 +89,7 @@ class TextRenderer:
 
         # Calculate starting positions to center the text
         x_position = (image_width - text_width) // 2
-        y_position = (image_height + text_height) // 2 - baseline
+        y_position = (image_height - text_height) // 2 + baseline
 
         previous_char = 0
         tasks = []
