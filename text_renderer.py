@@ -25,6 +25,13 @@ class TextRenderer:
     def __init__(
         self, font_path: str, char_size: int, cache: Optional[BitmapCache] = None
     ):
+        """
+        Initializes the TextRenderer with a specified font and character size.
+
+        :param font_path: [str] Path to the TrueType font file.
+        :param char_size: [int] Character size in points.
+        :param cache: [Optional[BitmapCache]] Instance for caching character bitmaps.
+        """
         self.face = Face(font_path)
         self.char_size = char_size * 64  # FreeType uses 1/64th points
         self.face.set_char_size(self.char_size)

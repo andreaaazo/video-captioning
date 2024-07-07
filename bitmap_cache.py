@@ -1,22 +1,28 @@
 import pickle
+from typing import Dict, Any
 
 
 class BitmapCache:
     """
-    BitmapCache handles loading and saving of character bitmaps.
+    Handles loading and saving of character bitmaps.
 
-    :param cache_file: Path to the cache file.
+    :param cache_file: [str] Path to the cache file.
     """
 
     def __init__(self, cache_file: str = "font_cache.pkl"):
+        """
+        Initializes the BitmapCache with the specified cache file path.
+
+        :param cache_file: [str] Path to the cache file.
+        """
         self.cache_file = cache_file
         self.cache = self.load_cache()
 
-    def load_cache(self) -> dict:
+    def load_cache(self) -> Dict[str, Any]:
         """
-        Load the character bitmap cache from a file.
+        Loads the character bitmap cache from a file.
 
-        :return: Dictionary containing cached bitmaps.
+        :return: [Dict[str, Any]] Dictionary containing cached bitmaps.
         """
         try:
             with open(self.cache_file, "rb") as f:
@@ -24,9 +30,9 @@ class BitmapCache:
         except (FileNotFoundError, EOFError):
             return {}
 
-    def save_cache(self):
+    def save_cache(self) -> None:
         """
-        Save the character bitmap cache to a file.
+        Saves the character bitmap cache to a file.
         """
         with open(self.cache_file, "wb") as f:
             pickle.dump(self.cache, f)

@@ -1,4 +1,4 @@
-from faster_whisper import WhisperModel
+from typing import List, Tuple
 from audio_file import AudioFile
 from speech_to_text_model import SpeechToTextModel
 
@@ -7,23 +7,33 @@ class SpeechToText:
     """
     Converts speech in an audio file to text with word-level timestamps.
 
-    :param model: Instance of SpeechToTextModel for transcription.
+    :param model: [SpeechToTextModel] Instance of SpeechToTextModel for transcription.
     """
 
     def __init__(self, model: SpeechToTextModel):
+        """
+        Initializes the SpeechToText with a specified model.
+
+        :param model: [SpeechToTextModel] Instance of SpeechToTextModel for transcription.
+        """
         self.model = model
 
-    def word_level_timestamps(self, audio_file: AudioFile) -> list:
+    def word_level_timestamps(
+        self, audio_file: AudioFile
+    ) -> List[Tuple[float, float, str]]:
         """
         Transcribes the audio file and returns word-level timestamps.
 
-        :param audio_file: An instance of AudioFile containing the path to the audio.
-        :return: A list of word-level timestamps. Each entry contains [start, end, word].
+        :param audio_file: [AudioFile] An instance of AudioFile containing the path to the audio.
+        :return: [List[Tuple[float, float, str]]] A list of word-level timestamps. Each entry contains [start, end, word].
         """
-        segments, _ = self.model.transcribe(audio_file.get_path())
+        segments, _ = self.model.transcribe_audio(audio_file.get_path())
 
-        words = []
-        for segment in segments:
-            words.extend([(word.start, word.end, word.word) for word in segment.words])
+        # Collect word-level timestamps
+        words = [
+            (word.start, word.end, word.word)
+            for segment in segments
+            for word in segment.words
+        ]
 
         return words

@@ -6,18 +6,25 @@ class VideoCodec:
     """
     Handles the encoding and decoding of video files.
 
-    :param video_path: Path to the input video file.
-    :param threads: Number of threads to use for encoding/decoding. Default is 8.
-    :param quality_scale: Quality scale for the output images (1-31). Default is 2.
+    :param video_path: [str] Path to the input video file.
+    :param threads: [int] Number of threads to use for encoding/decoding. Default is 8.
+    :param quality_scale: [int] Quality scale for the output images (1-31). Default is 2.
     """
 
     def __init__(self, video_path: str, threads: int = 8, quality_scale: int = 2):
+        """
+        Initializes the VideoCodec with specified video path, threads, and quality scale.
+
+        :param video_path: [str] Path to the input video file.
+        :param threads: [int] Number of threads to use for encoding/decoding. Default is 8.
+        :param quality_scale: [int] Quality scale for the output images (1-31). Default is 2.
+        """
         self.video_path = video_path
         self.threads = threads
         self.quality_scale = quality_scale
         self.temp_folder = os.path.join(os.path.dirname(video_path), "temp")
-        self.frame_folder = os.path.join(os.path.dirname(video_path), "temp", "frames")
-        self.audio_path = os.path.join(os.path.dirname(video_path), "temp", "audio.mp3")
+        self.frame_folder = os.path.join(self.temp_folder, "frames")
+        self.audio_path = os.path.join(self.temp_folder, "audio.mp3")
 
         # Create the output and frame folders if they do not exist
         os.makedirs(self.frame_folder, exist_ok=True)
@@ -40,18 +47,29 @@ class VideoCodec:
             .run()
         )
 
+        # Extract audio
+        (
+            ffmpeg.input(self.video_path)
+            .output(self.audio_path)
+            .global_args("-threads", str(self.threads))
+            .run()
+        )
+
     def encode_video(self, framerate: int = 30) -> None:
         """
         Compiles images back into a video file with the original audio.
 
-        :param framerate: Framerate for the output video. Default is 30.
+        :param framerate: [int] Framerate for the output video. Default is 30.
         :return: None
         """
         input_path = os.path.join(self.frame_folder, "%d.jpeg")
+        temp_video_path = os.path.join(self.temp_folder, "temp_vid.mp4")
+
+        # Encode video from frames
         (
             ffmpeg.input(input_path, framerate=framerate)
             .output(
-                os.path.join(self.temp_folder, "temp_vid.mp4"),
+                temp_video_path,
                 vcodec="libx264",
                 pix_fmt="yuv420p",
             )
@@ -60,15 +78,13 @@ class VideoCodec:
         )
 
         # Add audio to the video
-        temp_video_path = os.path.join(self.temp_folder, "temp_vid.mp4")
-
         video = ffmpeg.input(temp_video_path)
         audio = ffmpeg.input(self.audio_path)
 
         (
             ffmpeg.concat(video, audio, v=1, a=1)
             .output(
-                os.path.join(os.path.dirname(__file__), "final.mp4"),
+                os.path.join(os.path.dirname(self.video_path), "final.mp4"),
                 vcodec="libx264",
                 acodec="aac",
             )
@@ -83,6 +99,6 @@ class VideoCodec:
         """
         Returns the path to the frame folder.
 
-        :return: str: Path to the frame folder.
+        :return: [str] Path to the frame folder.
         """
         return self.frame_folder

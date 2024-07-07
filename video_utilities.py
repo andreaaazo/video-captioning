@@ -1,23 +1,29 @@
-import ffmpeg
 import os
+import ffmpeg
+from typing import Optional, Dict, Any
 
 
 class VideoUtilities:
     """
-    VideoUtilities provides various video processing utilities.
+    Provides various video processing utilities.
 
-    :param video_path: Path to the input video file [str].
+    :param video_path: [str] Path to the input video file.
     """
 
-    def __init__(self, video_path):
+    def __init__(self, video_path: str):
+        """
+        Initializes the VideoUtilities with the specified video path.
+
+        :param video_path: [str] Path to the input video file.
+        """
         self.video_path = video_path
 
-    def extract_audio(self):
+    def extract_audio(self) -> Optional[str]:
         """
         Extracts the audio from the video file and saves it in the 'temp' directory
         with the same base name but with an .mp3 extension.
 
-        :return: The directory where the audio file is saved [str].
+        :return: [Optional[str]] Directory where the audio file is saved or None if an error occurs.
         """
         audio_path = self._get_audio_output_path()
 
@@ -29,11 +35,11 @@ class VideoUtilities:
             print(f"Error occurred: {e.stderr.decode()}")
             return None
 
-    def get_frame_count(self):
+    def get_frame_count(self) -> Optional[int]:
         """
         Extracts the number of frames in the video file.
 
-        :return: The number of frames in the video [int] or None if an error occurs.
+        :return: [Optional[int]] Number of frames in the video or None if an error occurs.
         """
         try:
             probe = ffmpeg.probe(self.video_path)
@@ -43,18 +49,17 @@ class VideoUtilities:
             else:
                 print("Could not determine the number of frames.")
                 return None
-        except ffmpeg.Error as e:
-            print(f"Error occurred: {e.stderr.decode()}")
-            return None
-        except KeyError:
-            print("Could not find video stream information.")
+        except (ffmpeg.Error, KeyError) as e:
+            print(
+                f"Error occurred: {e.stderr.decode() if isinstance(e, ffmpeg.Error) else str(e)}"
+            )
             return None
 
-    def get_frame_rate(self):
+    def get_frame_rate(self) -> Optional[float]:
         """
         Extracts the frame rate of the video file.
 
-        :return: The frame rate of the video [float] or None if an error occurs.
+        :return: [Optional[float]] Frame rate of the video or None if an error occurs.
         """
         try:
             probe = ffmpeg.probe(self.video_path)
@@ -65,31 +70,36 @@ class VideoUtilities:
             else:
                 print("Could not determine the frame rate.")
                 return None
-        except ffmpeg.Error as e:
-            print(f"Error occurred: {e.stderr.decode()}")
-            return None
-        except KeyError:
-            print("Could not find video stream information.")
+        except (ffmpeg.Error, KeyError) as e:
+            print(
+                f"Error occurred: {e.stderr.decode() if isinstance(e, ffmpeg.Error) else str(e)}"
+            )
             return None
 
-    def _get_audio_output_path(self):
+    def _get_audio_output_path(self) -> str:
         """
         Generates the output path for the extracted audio file in the 'temp' directory.
 
-        :return: Path to the output audio file [str].
+        :return: [str] Path to the output audio file.
         """
         temp_dir = os.path.join(os.path.dirname(self.video_path), "temp")
         os.makedirs(temp_dir, exist_ok=True)
-        return os.path.join(temp_dir, f"audio.mp3")
+        return os.path.join(
+            temp_dir, f"{os.path.splitext(os.path.basename(self.video_path))[0]}.mp3"
+        )
 
-    def _get_video_stream(self, probe):
+    def _get_video_stream(self, probe: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Retrieves the video stream information from the ffmpeg probe result.
 
-        :param probe: The probe result from ffmpeg [dict].
-        :return: The video stream information [dict] or None if not found.
+        :param probe: [Dict[str, Any]] Probe result from ffmpeg.
+        :return: [Optional[Dict[str, Any]]] Video stream information or None if not found.
         """
         return next(
-            (stream for stream in probe["streams"] if stream["codec_type"] == "video"),
+            (
+                stream
+                for stream in probe.get("streams", [])
+                if stream.get("codec_type") == "video"
+            ),
             None,
         )
